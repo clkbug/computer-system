@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 
 typedef unsigned char* byte_pointer;
 
@@ -28,3 +29,14 @@ get_msb(int x)
     int xright = x >> shift_val;
     return xright & 0xFF;
 }
+
+/* 02.67 */
+/*
+int
+bad_int_size_is_32(void)
+{
+    int set_msb = 1 << 31;
+    int beyond_msb = 1 << 32;
+    return set_msb && !beyond_msb;
+}
+*/

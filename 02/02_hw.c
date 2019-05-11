@@ -5,6 +5,7 @@ void
 hw02_55(void)
 {
     int a = 0x12345678;
+    printf("02.55 ... ");
     show_bytes((byte_pointer)&a, sizeof(int));
     // little endian  <=> 78 56 34 12
     // big endian     <=> 12 34 56 78
@@ -157,21 +158,128 @@ int
 sra(int x, int k)
 {
     /* Perform shift logically */
-    // int xsrl = (unsigned int)x >> k;
-    // const int bit_length = sizeof(int) * 8;
-    return 0;
+    int xsrl = (unsigned int)x >> k;
+    const int bit_length = sizeof(int) * 8;
+
+    const unsigned int msb_ones = ((1 << k) - 1) << (bit_length - k);
+    return xsrl | (msb_ones & (-(x < 0)));
 }
 
 void
 hw02_63(void)
 {
-    printf("srl(8, 2) == %x\n", srl(0xFFFFFFF, 32));
     assert(srl(0xFFFFFFFF, 1) == 0x7FFFFFFF);
     assert(srl(0xFFFFFFFF, 16) == 0xFFFF);
     assert(srl(0xFFFFFFFF, 31) == 1);
     /* assert(srl(0xFFFFFFFF, 32) == 0); */ /* undefined behavior; See https://www.jpcert.or.jp/sc-rules/c-int34-c.html */
 
+    assert(sra(0xFFFFFFFF, 1) == 0xFFFFFFFF);
+    assert(sra(0xFFFFFFFF, 16) == 0xFFFFFFFF);
+    assert(sra(0xFFFFFFFF, 31) == 0xFFFFFFFF);
+    assert(sra(0x7FFFFFFF, 31) == 0x0);
+
     printf("02.63 ... ok\n");
+}
+
+/* 02.64 */
+/* Return 1 when any odd bit of x equals 1; 0 otherwise. Assume w=32 */
+int
+any_odd_one(unsigned int x)
+{
+    return x == 0xAAAAAAAA; /* assume 0-origin */
+}
+
+void
+hw02_64(void)
+{
+    assert(any_odd_one(0xAAAAAAAA) == 1);
+    assert(any_odd_one(0xA0AAAAAA) == 0);
+    printf("02.64 ... ok\n");
+}
+
+/* 02.65 */
+/* Return 1 when x contains an odd number of 1s; 0 otherwise. Assume w=32 */
+int
+odd_ones(unsigned int x)
+{
+    x ^= x >> 1;
+    x ^= x >> 2;
+    x ^= x >> 4;
+    x ^= x >> 8;
+    x ^= x >> 16;
+    return x & 1;
+}
+
+void
+hw02_65(void)
+{
+    assert(odd_ones(0) == 0);
+    assert(odd_ones(1) == 1);
+    assert(odd_ones(2) == 1);
+    assert(odd_ones(3) == 0);
+    assert(odd_ones(0x101010) == 1);
+    assert(odd_ones(0x101011) == 0);
+    assert(odd_ones(0xFFFFFFFF) == 0);
+    assert(odd_ones(0xFFFFEFFF) == 1);
+    assert(odd_ones(0xFEFF7FFF) == 0);
+    printf("02.65 ... ok\n");
+}
+
+/* 02.66 */
+int
+leftmost_one(unsigned int x)
+{
+    x |= x >> 1;
+    x |= x >> 2;
+    x |= x >> 4;
+    x |= x >> 8;
+    x |= x >> 16;
+    const unsigned int y = x + 1;
+    const unsigned int p = y > x;
+    return ((y >> 1) & -p) | (0x80000000 & (p - 1));
+    /* !!!! contains 17 logical/arithmetic/bit-wise operations ... */
+}
+
+void
+hw02_66(void)
+{
+    assert(leftmost_one(0xFF00) == 0x8000);
+    assert(leftmost_one(0x6600) == 0x4000);
+    assert(leftmost_one(0xFFFFFFF) == 0x8000000);
+    assert(leftmost_one(0xFFFFFFFF) == 0x80000000);
+    printf("02.66 ... !!!!\n");
+}
+
+/* 02.67 */
+int
+is_int_size_is_32(void)
+{
+    int x = 1 << 15;
+    return (x + x > 0) && ((x << 16) + (x << 16) == 0);
+}
+
+void
+hw02_67(void)
+{
+    printf("??? 02.67 ... is_int_size_is_32() = %d\n", is_int_size_is_32());
+}
+
+/* 02.68 */
+int
+lower_one_mask(int n)
+{
+    const int p = n < (sizeof(int) << 3);
+    return (((1 << n) - 1) & (-p)) | (-1 & (p - 1));
+}
+
+void
+hw02_68(void)
+{
+    assert(lower_one_mask(6) == 0x3F);
+    assert(lower_one_mask(17) == 0x1FFFF);
+    assert(lower_one_mask(31) == 0x7FFFFFFF);
+    assert(lower_one_mask(32) == 0xFFFFFFFF);
+    printf("02.68 ... ok\n");
 }
 
 int
@@ -185,6 +293,11 @@ main()
     hw02_61();
     hw02_62();
     hw02_63();
+    hw02_64();
+    hw02_65();
+    hw02_66();
+    hw02_67();
+    hw02_68();
 
     return 0;
 }
