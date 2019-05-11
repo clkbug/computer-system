@@ -247,7 +247,7 @@ hw02_66(void)
     assert(leftmost_one(0x6600) == 0x4000);
     assert(leftmost_one(0xFFFFFFF) == 0x8000000);
     assert(leftmost_one(0xFFFFFFFF) == 0x80000000);
-    printf("02.66 ... !!!!\n");
+    printf("!!! 02.66 ... ok\n");
 }
 
 /* 02.67 */
@@ -282,6 +282,69 @@ hw02_68(void)
     printf("02.68 ... ok\n");
 }
 
+/* 02.69 */
+unsigned int
+rotate_left(unsigned int x, int n)
+{
+    const int bit_length = sizeof(int) << 3;
+    const int y = x << n;
+    const int z = (x >> (bit_length - n)) & lower_one_mask(n);
+    return y | z; /* n == 0 ????? */
+}
+
+void
+hw02_69(void)
+{
+    assert(rotate_left(0x12345678, 4) == 0x23456781);
+    assert(rotate_left(0x12345678, 20) == 0x67812345);
+    assert(rotate_left(0x12345678, 0) == 0x12345678);
+    printf("??? 02.69 ... ok\n");
+}
+
+/* 02.70 */
+int
+fits_bits(int x, int n)
+{
+    return -(1 << (n - 1)) <= x && x <= (1 << (n - 1)) - 1;
+}
+
+void
+hw02_70(void)
+{
+    assert(fits_bits(8, 3) == 0);
+    assert(fits_bits(8, 4) == 0);
+    assert(fits_bits(8, 5) == 1);
+    assert(fits_bits(8, 6) == 1);
+    assert(fits_bits(-8, 4) == 1);
+    assert(fits_bits(-8, 3) == 0);
+    assert(fits_bits(-1, 1) == 1);
+    assert(fits_bits(0, 1) == 1);
+    assert(fits_bits(1, 1) == 0);
+    assert(fits_bits(INT_MAX, 32) == 1);
+    assert(fits_bits(INT_MIN, 32) == 1);
+    assert(fits_bits(INT_MAX, 31) == 0);
+    assert(fits_bits(INT_MIN, 31) == 0);
+    printf("02.70 ... ok\n");
+}
+
+/* 02.71 */
+typedef unsigned int packed_t;
+int
+xbyte(packed_t word, int bytenum)
+{
+    return (int)word << (24 - (bytenum << 3)) >> 24;
+}
+
+void
+hw02_71(void)
+{
+    assert(xbyte(0x12345688, 0) == 0xFFFFFF88);
+    assert(xbyte(0x1234AB78, 1) == 0xFFFFFFAB);
+    assert(xbyte(0x12345678, 2) == 0x34);
+    assert(xbyte(0x12345678, 3) == 0x12);
+    printf("02.71 ... ok\n");
+}
+
 int
 main()
 {
@@ -298,6 +361,9 @@ main()
     hw02_66();
     hw02_67();
     hw02_68();
+    hw02_69();
+    hw02_70();
+    hw02_71();
 
     return 0;
 }
