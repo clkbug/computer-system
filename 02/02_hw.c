@@ -345,9 +345,226 @@ hw02_71(void)
     printf("02.71 ... ok\n");
 }
 
+/* 02.72 */
+void
+copy_int(int val, void* buf, int maxbytes)
+{
+    if (maxbytes >= sizeof(val)) {
+        memcpy(buf, (void*)&val, sizeof(val));
+    }
+}
+
+void
+hw02_72(void)
+{
+    int a = 0;
+    copy_int(0x12345678, &a, 4);
+    assert(a == 0x12345678);
+    a = 0;
+    copy_int(0x12345678, &a, 3);
+    assert(a == 0);
+    printf("02.72 ... ok\n");
+}
+
+/* 02.73 */
+int
+saturationg_add(int x, int y)
+{
+    const int sum = x + y;
+    if ((x > 0 && y > 0 && sum <= 0)) {
+        return INT_MAX;
+    } else if (x < 0 && y < 0 && sum >= 0) {
+        return INT_MIN;
+    } else {
+        return sum;
+    }
+}
+
+void
+hw02_73(void)
+{
+    assert(saturationg_add(100, 20) == 120);
+    assert(saturationg_add(-1, INT_MIN) == INT_MIN);
+    assert(saturationg_add(INT_MAX, INT_MAX) == INT_MAX);
+    printf("02.73 ... ok\n");
+}
+
+/* 02.74 */
+int
+tsub_ok(int x, int y)
+{
+    return (x - y) == saturationg_add(x, -y);
+}
+
+void
+hw02_74(void)
+{
+    assert(tsub_ok(0, INT_MIN) == 1);
+    assert(tsub_ok(-1, INT_MIN) == 0);
+    printf("02.74 ... ok\n");
+}
+
+/* 02.75 */
+int
+signed_high_prod(int x, int y)
+{
+    /* cheating */
+    const long z = (unsigned long)(unsigned int)x * (unsigned long)(unsigned int)y;
+    return z >> 32;
+}
+
+unsigned int
+unsigned_high_prod(unsigned int x, unsigned int y)
+{
+    return signed_high_prod(x, y);
+}
+
+void
+hw02_75(void)
+{
+    assert(unsigned_high_prod(100, 20) == 0);
+    assert(unsigned_high_prod(0xFFFFFFFF, 0xFFFFFFFF) == 0xFFFFFFFE);
+    assert(unsigned_high_prod(0x8FFFFFFF, 0x2) == 0x1);
+    printf("02.75 ... ok\n");
+}
+
+/* 02.76 */
+void*
+my_calloc(size_t nmemb, size_t size)
+{
+    if (nmemb == 0 || size == 0) {
+        return NULL;
+    }
+
+    void* buf = malloc(size * nmemb);
+
+    if (buf == NULL) {
+        return NULL;
+    }
+
+    for (size_t i = 0; i < size * nmemb; i++) {
+        ((uint8_t*)buf)[i] = 0;
+    }
+
+    return buf;
+}
+
+void
+hw02_76(void)
+{
+    assert(my_calloc(0, 100) == NULL);
+    assert(my_calloc(10, 0) == NULL);
+
+    int* buf = my_calloc(10, sizeof(int));
+    for (size_t i = 0; i < 10; i++)
+        assert(buf[i] == 0);
+
+    double* bufd = my_calloc(32, sizeof(double));
+    for (size_t i = 0; i < 32; i++)
+        assert(bufd[i] == 0.0);
+
+    printf("02.76 ... ok\n");
+}
+
+/* 02.77 */
+int
+mul_17(int x)
+{
+    return (x << 4) + x;
+}
+int
+mul_m7(int x)
+{
+    return -(x << 3) + x;
+}
+int
+mul_60(int x)
+{
+    return (x << 6) - (x << 2);
+}
+int
+mul_m112(int x)
+{
+    return (x << 4) - (x << 7);
+}
+
+void
+hw02_77(void)
+{
+    for (int i = 0; i < 1000; i++) {
+        const int r = rand();
+        assert(mul_17(r) == r * 17);
+        assert(mul_m7(r) == r * (-7));
+        assert(mul_60(r) == r * 60);
+        assert(mul_m112(r) == r * (-112));
+    }
+    printf("02.77 ... ok\n");
+}
+
+/* 02.78 */
+int
+divide_power2(int x, int k)
+{
+    return x >> k;
+}
+
+void
+hw02_78(void)
+{
+    assert(divide_power2(10, 0) == 10);
+    assert(divide_power2(10, 1) == 5);
+    assert(divide_power2(10, 2) == 2);
+    assert(divide_power2(10, 3) == 1);
+    assert(divide_power2(10, 4) == 0);
+    printf("02.78 ... ok\n");
+}
+
+/* 02.79 */
+int
+mul3div4(int x)
+{
+    return ((x << 1) + x) >> 2;
+}
+
+void
+hw02_79(void)
+{
+    assert(mul3div4(20) == 15);
+    assert(mul3div4(-240) == -180);
+    // assert(mul3div4(732777683) == 732777683 * 3 / 4);
+    printf("02.79 ... ok\n");
+}
+
+/* 02.80 */
+int
+threefourths(int x)
+{
+    int y = x >> 2;
+    y = (y << 1) + y;
+    int z = x & 3;
+    z = (z << 1) + z;
+    z >>= 2;
+    return y + z;
+}
+
+void
+hw02_80(void)
+{
+    assert(threefourths(20) == 15);
+    assert(threefourths(-240) == -180);
+    assert(threefourths(732777683) == 732777683l * 3 / 4);
+    for (int i = 0; i < 1000; i++) {
+        const long r = rand();
+        assert(threefourths(r) == r * 3 / 4);
+    }
+
+    printf("02.80 ... ok\n");
+}
+
 int
 main()
 {
+    srand(0x12345678);
     hw02_55();
 
     hw02_58();
@@ -364,6 +581,15 @@ main()
     hw02_69();
     hw02_70();
     hw02_71();
+    hw02_72();
+    hw02_73();
+    hw02_74();
+    hw02_75();
+    hw02_76();
+    hw02_77();
+    hw02_78();
+    hw02_79();
+    hw02_80();
 
     return 0;
 }
