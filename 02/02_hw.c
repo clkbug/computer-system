@@ -146,11 +146,9 @@ srl(unsigned int x, int k)
     unsigned int xsra = (int)x >> k;
     const int bit_length = sizeof(int) * 8;
 
-    /* (1 << k) - 1                         = 0b11...1
-   * ((1 << k) - 1 << (bit_length - k))   = 0b11...100...0 (1: k, 0: bit_length
-   * - k)
-   * ~((1 << k) - 1 << (bit_length - k))  = 0b00...011...1 (0: k, 1: bit_length
-   * - k) */
+    /*  (1 << k) - 1                         = 0b11...1
+        ((1 << k) - 1 << (bit_length - k))   = 0b11...100...0 (1: k, 0: bit_length - k)
+        ~((1 << k) - 1 << (bit_length - k))  = 0b00...011...1 (0: k, 1: bit_length - k) */
     const unsigned int msb_zeros = ~(((1 << k) - 1) << (bit_length - k));
     return xsra & msb_zeros;
 }
@@ -171,9 +169,7 @@ hw02_63(void)
     assert(srl(0xFFFFFFFF, 1) == 0x7FFFFFFF);
     assert(srl(0xFFFFFFFF, 16) == 0xFFFF);
     assert(srl(0xFFFFFFFF, 31) == 1);
-    /* assert(srl(0xFFFFFFFF, 32) == 0); */ /* undefined behavior; See
-                                             https://www.jpcert.or.jp/sc-rules/c-int34-c.html
-                                           */
+    /* assert(srl(0xFFFFFFFF, 32) == 0); */ /* undefined behavior; See https://www.jpcert.or.jp/sc-rules/c-int34-c.html */
 
     printf("02.63 ... ok\n");
 }
