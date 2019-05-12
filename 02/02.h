@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <limits.h>
+#include <math.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -41,3 +42,27 @@ bad_int_size_is_32(void)
     return set_msb && !beyond_msb;
 }
 */
+
+typedef union
+{
+    uint32_t u32;
+    uint64_t u64;
+    float f32;
+    double f64;
+} int_and_float_union_t;
+
+uint32_t
+f2u(float x)
+{
+    int_and_float_union_t u;
+    u.f32 = x;
+    return u.u32;
+}
+
+float
+u2f(uint32_t x)
+{
+    int_and_float_union_t u;
+    u.u32 = x;
+    return u.f32;
+}

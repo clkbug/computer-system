@@ -119,9 +119,9 @@ hw02_61(void)
 int
 int_shifts_are_arithmetic(void)
 {
-    int bit_length = sizeof(int) << 3;
+    size_t bit_width = sizeof(int) << 3;
     int x = -1;
-    if ((x >> (bit_length - 1)) == -1) {
+    if ((x >> (bit_width - 1)) == -1) {
         return 1;
     } else {
         return 0;
@@ -145,12 +145,12 @@ srl(unsigned int x, int k)
 {
     /* Perform shift arithmetically */
     unsigned int xsra = (int)x >> k;
-    const int bit_length = sizeof(int) * 8;
+    const size_t bit_width = sizeof(int) * 8;
 
     /*  (1 << k) - 1                         = 0b11...1
-        ((1 << k) - 1 << (bit_length - k))   = 0b11...100...0 (1: k, 0: bit_length - k)
-        ~((1 << k) - 1 << (bit_length - k))  = 0b00...011...1 (0: k, 1: bit_length - k) */
-    const unsigned int msb_zeros = ~(((1 << k) - 1) << (bit_length - k));
+        ((1 << k) - 1 << (bit_width - k))   = 0b11...100...0 (1: k, 0: bit_width - k)
+        ~((1 << k) - 1 << (bit_width - k))  = 0b00...011...1 (0: k, 1: bit_width - k) */
+    const unsigned int msb_zeros = ~(((1 << k) - 1) << (bit_width - k));
     return xsra & msb_zeros;
 }
 
@@ -159,9 +159,9 @@ sra(int x, int k)
 {
     /* Perform shift logically */
     int xsrl = (unsigned int)x >> k;
-    const int bit_length = sizeof(int) * 8;
+    const size_t bit_width = sizeof(int) * 8;
 
-    const unsigned int msb_ones = ((1 << k) - 1) << (bit_length - k);
+    const unsigned int msb_ones = ((1 << k) - 1) << (bit_width - k);
     return xsrl | (msb_ones & (-(x < 0)));
 }
 
@@ -173,9 +173,9 @@ hw02_63(void)
     assert(srl(0xFFFFFFFF, 31) == 1);
     /* assert(srl(0xFFFFFFFF, 32) == 0); */ /* undefined behavior; See https://www.jpcert.or.jp/sc-rules/c-int34-c.html */
 
-    assert(sra(0xFFFFFFFF, 1) == 0xFFFFFFFF);
-    assert(sra(0xFFFFFFFF, 16) == 0xFFFFFFFF);
-    assert(sra(0xFFFFFFFF, 31) == 0xFFFFFFFF);
+    assert(sra(0xFFFFFFFF, 1) == (int)0xFFFFFFFF);
+    assert(sra(0xFFFFFFFF, 16) == (int)0xFFFFFFFF);
+    assert(sra(0xFFFFFFFF, 31) == (int)0xFFFFFFFF);
     assert(sra(0x7FFFFFFF, 31) == 0x0);
 
     printf("02.63 ... ok\n");
@@ -245,8 +245,8 @@ hw02_66(void)
 {
     assert(leftmost_one(0xFF00) == 0x8000);
     assert(leftmost_one(0x6600) == 0x4000);
-    assert(leftmost_one(0xFFFFFFF) == 0x8000000);
-    assert(leftmost_one(0xFFFFFFFF) == 0x80000000);
+    assert(leftmost_one(0xFFFFFFF) == (int)0x8000000);
+    assert(leftmost_one(0xFFFFFFFF) == (int)0x80000000);
     printf("!!! 02.66 ... ok\n");
 }
 
@@ -268,7 +268,7 @@ hw02_67(void)
 int
 lower_one_mask(int n)
 {
-    const int p = n < (sizeof(int) << 3);
+    const int p = n < ((int)sizeof(int) << 3);
     return (((1 << n) - 1) & (-p)) | (-1 & (p - 1));
 }
 
@@ -278,7 +278,7 @@ hw02_68(void)
     assert(lower_one_mask(6) == 0x3F);
     assert(lower_one_mask(17) == 0x1FFFF);
     assert(lower_one_mask(31) == 0x7FFFFFFF);
-    assert(lower_one_mask(32) == 0xFFFFFFFF);
+    assert(lower_one_mask(32) == (int)0xFFFFFFFF);
     printf("02.68 ... ok\n");
 }
 
@@ -286,9 +286,9 @@ hw02_68(void)
 unsigned int
 rotate_left(unsigned int x, int n)
 {
-    const int bit_length = sizeof(int) << 3;
+    const size_t bit_width = sizeof(int) << 3;
     const int y = x << n;
-    const int z = (x >> (bit_length - n)) & lower_one_mask(n);
+    const int z = (x >> (bit_width - n)) & lower_one_mask(n);
     return y | z; /* n == 0 ????? */
 }
 
@@ -338,8 +338,8 @@ xbyte(packed_t word, int bytenum)
 void
 hw02_71(void)
 {
-    assert(xbyte(0x12345688, 0) == 0xFFFFFF88);
-    assert(xbyte(0x1234AB78, 1) == 0xFFFFFFAB);
+    assert(xbyte(0x12345688, 0) == (int)0xFFFFFF88);
+    assert(xbyte(0x1234AB78, 1) == (int)0xFFFFFFAB);
     assert(xbyte(0x12345678, 2) == 0x34);
     assert(xbyte(0x12345678, 3) == 0x12);
     printf("02.71 ... ok\n");
@@ -349,7 +349,7 @@ hw02_71(void)
 void
 copy_int(int val, void* buf, int maxbytes)
 {
-    if (maxbytes >= sizeof(val)) {
+    if (maxbytes >= (int)sizeof(val)) {
         memcpy(buf, (void*)&val, sizeof(val));
     }
 }
@@ -561,6 +561,66 @@ hw02_80(void)
     printf("02.80 ... ok\n");
 }
 
+/* 02.81 */
+unsigned int
+hw02_81_a(unsigned int k)
+{
+    if (k == 32) return 0;
+    return (unsigned int)(~0) << k;
+}
+
+unsigned int
+hw02_81_b(unsigned int k, unsigned int j)
+{
+    const size_t bit_width = sizeof(unsigned int) << 3;
+    return (unsigned int)(~0) >> j << (bit_width - k) >> (bit_width - k - j);
+}
+
+void
+hw02_81(void)
+{
+    assert(hw02_81_a(0) == 0xFFFFFFFF);
+    assert(hw02_81_a(4) == 0xFFFFFFF0);
+    assert(hw02_81_a(7) == 0xFFFFFF80);
+    assert(hw02_81_a(32) == 0);
+    assert(hw02_81_b(1, 1) == 2);
+    assert(hw02_81_b(6, 1) == 126);
+    assert(hw02_81_b(6, 3) == 504);
+
+    printf("02.81 ... ok\n");
+}
+
+/* 02.82, 83 skip */
+
+/* 02.84 */
+int
+float_le(float x, float y)
+{
+    assert(!isnan(x) & !isnan(y));
+    unsigned int ux = f2u(x);
+    unsigned int uy = f2u(y);
+
+    unsigned int sx = ux >> 31;
+    unsigned int sy = uy >> 31;
+
+    return ((ux << 1) == 0 && (uy << 1) == 0) ? 1 : // x = y = +/- 0.0
+             (sx > sy) ? 1 :                        // x <= 0 <= y
+               (sx < sy) ? 0 :                      // y <= 0 <= x
+                 ux <= uy;
+}
+
+void
+hw02_84(void)
+{
+    assert(float_le(+0.0, -0.0));
+    assert(float_le(-0.0, +0.0));
+    assert(float_le(+0.0, +0.0));
+    assert(float_le(-0.0, -0.0));
+    assert(float_le(5.1, 7.2));
+    assert(float_le(-1.2, 3609.2));
+    printf("02.84 ... ok\n");
+}
+
 int
 main()
 {
@@ -590,6 +650,9 @@ main()
     hw02_78();
     hw02_79();
     hw02_80();
+    hw02_81();
+
+    hw02_84();
 
     return 0;
 }

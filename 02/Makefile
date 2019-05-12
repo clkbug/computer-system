@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Werror -Wpedantic -std=c11 -g
+CFLAGS = -Wall -Werror -Wextra -Wpedantic -std=c11 -g
 SHELL = /bin/bash
 
 HOMEWORK = 02_hw
