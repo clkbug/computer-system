@@ -621,6 +621,43 @@ hw02_84(void)
     printf("02.84 ... ok\n");
 }
 
+/* 02.85, 86, 87, 88, 89 skip */
+
+/* 02.90 */
+float
+fpwr2(int x)
+{
+    unsigned int exp, frac;
+    unsigned int u;
+
+    if (x < -149) { /* Too small. Return 0.0 */
+        exp = 0;
+        frac = 0;
+    } else if (x < -126) { /* Denormalized result */
+        /* 2^-149 ~ 2^-127 */
+        exp = 0;
+        frac = 1 << (x + 149);
+    } else if (x < 128) { /* Normalized result. */
+        exp = x + 127;    /* 1 <= exp <= 254 */
+        frac = 0;
+    } else { /* Too big. Return +Inf */
+        exp = 255;
+        frac = 0;
+    }
+
+    u = exp << 23 | frac;
+    return u2f(u);
+}
+
+void
+hw02_90(void)
+{
+    for (int i = -256; i <= 256; i++)
+        assert(fpwr2(i) == powf(2.0f, (float)i));
+
+    printf("02.90 ... ok\n");
+}
+
 int
 main()
 {
@@ -653,6 +690,8 @@ main()
     hw02_81();
 
     hw02_84();
+
+    hw02_90();
 
     return 0;
 }

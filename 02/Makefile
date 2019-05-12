@@ -1,14 +1,14 @@
 CC = gcc
-CFLAGS = -Wall -Werror -Wextra -Wpedantic -std=c11 -g
+CFLAGS = -Wall -Werror -Wextra -Wpedantic -std=c11 -g -lm
 SHELL = /bin/bash
 
 HOMEWORK = 02_hw
 
 02_hw: 02_hw.c
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) -o $@ $^ $(CFLAGS)
 
 02_hw_opt: 02_hw.c
-	$(CC) $(CFLAGS) -O2 -o $@ $^
+	$(CC) -o $@ $^ $(CFLAGS) -O2
 
 .PHONY: clean run runopt test debug
 clean:
