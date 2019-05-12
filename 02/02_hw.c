@@ -689,6 +689,34 @@ hw02_92(void)
     printf("02.92 ... ok\n");
 }
 
+/* 02.93 */
+float_bits
+float_absval(float_bits f)
+{
+    unsigned int exp = f >> 23 & 0xFF;
+    unsigned int frac = f & 0x7FFFFF;
+
+    if (exp == 0xFF && frac != 0)
+        return f;
+
+    return (0 << 31) | (exp << 23) | frac;
+}
+
+void
+hw02_93(void)
+{
+    for (uint64_t i = 0; i < 1l << 32; i++) {
+        if (isnan(u2f((uint32_t)i))) {
+            assert(float_absval(i) == (float_bits)i);
+        } else {
+            assert(float_absval(i) == f2u(fabsf(u2f(i))));
+        }
+    }
+    printf("02.93 ... ok\n");
+}
+
+
+
 int
 main()
 {
@@ -724,7 +752,8 @@ main()
 
     hw02_90();
 
-    hw02_92();
+    // hw02_92();
+    hw02_93();
 
     return 0;
 }
