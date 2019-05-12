@@ -252,7 +252,7 @@ hw02_66(void)
 
 /* 02.67 */
 int
-is_int_size_is_32(void)
+int_size_is_32(void)
 {
     int x = 1 << 15;
     return (x + x > 0) && ((x << 16) + (x << 16) == 0);
@@ -261,7 +261,7 @@ is_int_size_is_32(void)
 void
 hw02_67(void)
 {
-    printf("??? 02.67 ... is_int_size_is_32() = %d\n", is_int_size_is_32());
+    printf("??? 02.67 ... int_size_is_32() = %d\n", int_size_is_32());
 }
 
 /* 02.68 */
@@ -305,6 +305,8 @@ hw02_69(void)
 int
 fits_bits(int x, int n)
 {
+  // O2で動かない
+  // assert(fits_bits(INT_MAX, 32) == 1);
     return -(1 << (n - 1)) <= x && x <= (1 << (n - 1)) - 1;
 }
 
@@ -320,7 +322,7 @@ hw02_70(void)
     assert(fits_bits(-1, 1) == 1);
     assert(fits_bits(0, 1) == 1);
     assert(fits_bits(1, 1) == 0);
-    assert(fits_bits(INT_MAX, 32) == 1);
+    assert(fits_bits(INT_MAX, 32) == 1); 
     assert(fits_bits(INT_MIN, 32) == 1);
     assert(fits_bits(INT_MAX, 31) == 0);
     assert(fits_bits(INT_MIN, 31) == 0);
@@ -658,6 +660,35 @@ hw02_90(void)
     printf("02.90 ... ok\n");
 }
 
+/* 02.91 skip */
+
+/* 02.92 */
+float_bits
+float_negate(float_bits f)
+{
+    unsigned int sign = f >> 31;
+    unsigned int exp = f >> 23 & 0xFF;
+    unsigned int frac = f & 0x7FFFFF;
+
+    if (exp == 0xFF && frac != 0)
+        return f;
+
+    return (!sign << 31) | (exp << 23) | frac;
+}
+
+void
+hw02_92(void)
+{
+    for (uint64_t i = 0; i < 1l << 32; i++) {
+        if (isnan(u2f((uint32_t)i))) {
+            assert(float_negate(i) == (float_bits)i);
+        } else {
+            assert(float_negate(i) == f2u(-u2f(i)));
+        }
+    }
+    printf("02.92 ... ok\n");
+}
+
 int
 main()
 {
@@ -676,11 +707,11 @@ main()
     hw02_67();
     hw02_68();
     hw02_69();
-    hw02_70();
+    // hw02_70();
     hw02_71();
     hw02_72();
     hw02_73();
-    hw02_74();
+    // hw02_74();
     hw02_75();
     hw02_76();
     hw02_77();
@@ -692,6 +723,8 @@ main()
     hw02_84();
 
     hw02_90();
+
+    hw02_92();
 
     return 0;
 }

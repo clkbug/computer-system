@@ -66,3 +66,19 @@ u2f(uint32_t x)
     u.u32 = x;
     return u.f32;
 }
+
+typedef unsigned int float_bits;
+
+float_bits
+float_denorm_zero(float_bits f)
+{
+    unsigned int sign = f >> 31;
+    unsigned int exp = f >> 23 & 0xFF;
+    unsigned int frac = f & 0x7FFFFF;
+
+    if (exp == 0) {
+        frac = 0;
+    }
+    return (sign << 31) | (exp << 23) | frac;
+}
+
