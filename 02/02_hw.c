@@ -753,6 +753,43 @@ hw02_94(void)
     printf("02.94 ... ok\n");
 }
 
+/* 02.95 */
+float_bits
+float_half(float_bits f)
+{
+    const unsigned int sign = f >> 31;
+    const unsigned int exp = f >> 23 & 0xFF;
+    const unsigned int frac = f & 0x7FFFFF;
+
+    unsigned int nextfrac = (f & 3) == 3 ? ((f + 1) >> 1) : (f >> 1);
+
+    if (exp == 0xFF) /* Inf or NaN */
+        return f;
+
+    if (exp == 0) { /* denormalized number */
+        return (sign << 31) | nextfrac;
+    }
+
+    if (exp == 1) /* normalized -> denormalized */
+        return (sign << 31) | (1 << 23) | nextfrac;
+
+    return (sign << 31) | ((exp - 1) << 23) | frac;
+}
+
+void
+hw02_95(void)
+{
+    for (uint64_t i = 0; i < 1l << 32; i++) {
+        if (isnan(u2f((uint32_t)i))) {
+            assert(float_half(i) == (float_bits)i);
+        } else {
+             printf("%lx: %f(%x)\t%f(%x)\n", i, u2f(float_half(i)), float_half(i), u2f(i) / 2.0f, f2u(u2f(i) / 2.0f));
+            assert(float_half(i) == f2u(u2f(i) / 2.0f));
+        }
+    }
+    printf("02.95 ... ok\n");
+}
+
 int
 main()
 {
@@ -790,7 +827,8 @@ main()
 
     // hw02_92();
     // hw02_93();
-    hw02_94();
+    // hw02_94();
+    hw02_95();
 
     return 0;
 }
