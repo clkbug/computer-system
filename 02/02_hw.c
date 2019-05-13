@@ -305,8 +305,8 @@ hw02_69(void)
 int
 fits_bits(int x, int n)
 {
-  // O2で動かない
-  // assert(fits_bits(INT_MAX, 32) == 1);
+    // O2で動かない
+    // assert(fits_bits(INT_MAX, 32) == 1);
     return -(1 << (n - 1)) <= x && x <= (1 << (n - 1)) - 1;
 }
 
@@ -322,7 +322,7 @@ hw02_70(void)
     assert(fits_bits(-1, 1) == 1);
     assert(fits_bits(0, 1) == 1);
     assert(fits_bits(1, 1) == 0);
-    assert(fits_bits(INT_MAX, 32) == 1); 
+    assert(fits_bits(INT_MAX, 32) == 1);
     assert(fits_bits(INT_MIN, 32) == 1);
     assert(fits_bits(INT_MAX, 31) == 0);
     assert(fits_bits(INT_MIN, 31) == 0);
@@ -715,7 +715,43 @@ hw02_93(void)
     printf("02.93 ... ok\n");
 }
 
+/* 02.94 */
+float_bits
+float_twice(float_bits f)
+{
+    const unsigned int sign = f >> 31;
+    unsigned int exp = f >> 23 & 0xFF;
+    unsigned int frac = f & 0x7FFFFF;
 
+    if (exp == 0xFF) /* Inf or NaN */
+        return f;
+
+    if (exp == 0) {              /* denormalized number */
+        if ((frac >> 22) == 0) { /* denormalized number */
+            return (sign << 31) | (frac << 1);
+        } else { /* denormalized -> normalized */
+            return (sign << 31) | (1 << 23) | ((frac << 1) & 0x7FFFFF);
+        }
+    }
+
+    if (exp == 0xFE)
+        return (sign << 31) | (0xFF << 23); /* oveflow to +/- Infinity */
+
+    return (sign << 31) | ((exp + 1) << 23) | frac;
+}
+
+void
+hw02_94(void)
+{
+    for (uint64_t i = 0; i < 1l << 32; i++) {
+        if (isnan(u2f((uint32_t)i))) {
+            assert(float_twice(i) == (float_bits)i);
+        } else {
+            assert(float_twice(i) == f2u(2 * u2f(i)));
+        }
+    }
+    printf("02.94 ... ok\n");
+}
 
 int
 main()
@@ -753,7 +789,8 @@ main()
     hw02_90();
 
     // hw02_92();
-    hw02_93();
+    // hw02_93();
+    hw02_94();
 
     return 0;
 }
