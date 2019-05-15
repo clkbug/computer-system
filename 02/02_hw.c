@@ -773,7 +773,7 @@ float_half(float_bits f)
     }
 
     if (exp == 1) { /* normalized -> denormalized */
-        if ((nextfrac & ~0x7FFFFF) != 0)
+        if ((nextfrac & ~0x7FFFFF) != 0) /* 1.11..1 * 2^-126 / 2 = 1.0...0 * 2^-126 */
             return (sign << 31) | (1 << 23) | (nextfrac & 0x7FFFFF);
         else
             return (sign << 31) | (1 << 22) | nextfrac;
@@ -789,8 +789,6 @@ hw02_95(void)
         if (isnan(u2f((uint32_t)i))) {
             assert(float_half(i) == (float_bits)i);
         } else {
-            if (float_half(i) != f2u(u2f(i) / 2.0f))
-                printf("%lx: %f(%x)\t%f(%x)\n", i, u2f(float_half(i)), float_half(i), u2f(i) / 2.0f, f2u(u2f(i) / 2.0f));
             assert(float_half(i) == f2u(u2f(i) / 2.0f));
         }
     }
