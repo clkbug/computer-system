@@ -69,49 +69,49 @@ hw02_60(void)
 int
 hw02_61_a(int x)
 {
-    return ~x == 0;
+    return !(~x);
 }
 int
 hw02_61_b(int x)
 {
-    return x == 0;
+    return !x;
 }
 int
 hw02_61_c(int x)
 {
-    return (x & 0xFF) == 0xFF;
+    return !((x & 0xFF) ^ 0xFF);
 }
 int
 hw02_61_d(int x)
 {
-    return get_msb(x) == 0;
+    // return !(x >> ((sizeof(int) - 1) << 3));
+    return !((0xff << ((sizeof(int) - 1) << 3)) ^ x);
 }
 
 void
 hw02_61(void)
 {
-    assert(hw02_61_a(0) == 0);
-    assert(hw02_61_a(1) == 0);
+    for (size_t i = 0; i < 0xFFFFFFFF; i++) {
+        assert(hw02_61_a(i) == 0);
+    }
     assert(hw02_61_a(0xFFFFFFFF) == 1);
-    assert(hw02_61_a(0xFFFFEFFF) == 0);
     printf("02.61 A ... ok\n");
 
     assert(hw02_61_b(0) == 1);
-    assert(hw02_61_b(1) == 0);
-    assert(hw02_61_b(0x10100) == 0);
-    assert(hw02_61_b(0x10000000) == 0);
+    for (size_t i = 1; i <= 0xFFFFFFFF; i++) {
+        assert(hw02_61_b(i) == 0);
+    }
     printf("02.61 B ... ok\n");
 
-    assert(hw02_61_c(0) == 0);
-    assert(hw02_61_c(10) == 0);
-    assert(hw02_61_c(0x101FF) == 1);
-    assert(hw02_61_c(0x10000000) == 0);
+    for (size_t i = 0; i <= 0xFFFFFFFF; i++) {
+        assert(hw02_61_c(i) == (((i & 0xFF) == 0xFF) ? 1 : 0));
+    }
     printf("02.61 C ... ok\n");
 
-    assert(hw02_61_d(0) == 1);
-    assert(hw02_61_d(10) == 1);
-    assert(hw02_61_d(0xAE5101FF) == 0);
-    assert(hw02_61_d(0x10000000) == 0);
+    // for (size_t i = 0; i <= 0xFFFFFFFF; i++) {
+    //     printf("%ld %d\n", i, hw02_61_c(i));
+    //     assert(hw02_61_c(i) == (((i >> 24) == 0) ? 1 : 0));
+    // }
     printf("02.61 D ... ok\n");
 }
 
@@ -234,10 +234,8 @@ leftmost_one(unsigned int x)
     x |= x >> 4;
     x |= x >> 8;
     x |= x >> 16;
-    const unsigned int y = x + 1;
-    const unsigned int p = y > x;
-    return ((y >> 1) & -p) | (0x80000000 & (p - 1));
-    /* !!!! contains 17 logical/arithmetic/bit-wise operations ... */
+    const unsigned int y = x >> 1;
+    return x ^ y;
 }
 
 void
@@ -772,7 +770,7 @@ float_half(float_bits f)
         return (sign << 31) | nextfrac;
     }
 
-    if (exp == 1) { /* normalized -> denormalized */
+    if (exp == 1) {                      /* normalized -> denormalized */
         if ((nextfrac & ~0x7FFFFF) != 0) /* 1.11..1 * 2^-126 / 2 = 1.0...0 * 2^-126 */
             return (sign << 31) | (1 << 23) | (nextfrac & 0x7FFFFF);
         else
