@@ -4,7 +4,13 @@
 long
 decode2_c(long x, long y, long z)
 {
-    return x + y + z;
+    long t;
+    y = y - z;
+    x *= y;
+    t = y;
+    t <<= 63;
+    t >>= 63;
+    return t ^ x;
 }
 
 void
