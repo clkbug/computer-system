@@ -266,7 +266,7 @@ hw02_67(void)
 int
 lower_one_mask(int n)
 {
-    const int p = n < ((int)sizeof(int) << 3);
+    const int p = n != ((int)sizeof(int) << 3);
     return (((1 << n) - 1) & (-p)) | (-1 & (p - 1));
 }
 
