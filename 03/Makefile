@@ -1,11 +1,12 @@
 CC = gcc
-CFLAGS = -Wall -Werror -Wextra -Wpedantic -std=c11 -g -lm
+CFLAGS = -Wall -Werror -Wextra -std=c11 -g -lm
 SHELL = /bin/bash
 
 HOMEWORK = 03_hw
 
 03_hw: 03_hw.c 03_asm.s
 	$(CC) -o $@ $^ $(CFLAGS)
+	$(CC) -S $^ $(CFLAGS)
 
 03_hw_opt: 03_hw.c 03_asm.s
 	$(CC) -o $@ $^ $(CFLAGS) -O2

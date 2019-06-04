@@ -23,12 +23,35 @@ hw03_58(void)
     printf("03.58 ... ok\n");
 }
 
+long
+loop_c(long x, int n)
+{
+    long result = 0;
+
+    for (long mask = 0; mask < n; mask++) {
+        result |= mask;
+    }
+    return 0;
+}
+
+void
+hw03_59(void)
+{
+    for (int i = 0; i < 10000; i++) {
+        long x = rand();
+        int n = rand() % 1000;
+        assert(loop(x, n) == loop_c(x, n));
+    }
+    printf("03.58 ... ok\n");
+}
+
 int
 main()
 {
     srand(0x12345678);
 
     hw03_58();
+    hw03_59();
 
     return 0;
 }
