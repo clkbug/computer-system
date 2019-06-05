@@ -28,21 +28,21 @@ loop_c(long x, int n)
 {
     long result = 0;
 
-    for (long mask = 0; mask < n; mask++) {
-        result |= mask;
+    for (long mask = 1; mask != 0; mask <<= (n & 0xFF)) {
+        result |= x & mask;
     }
-    return 0;
+    return result;
 }
 
 void
 hw03_59(void)
 {
-    for (int i = 0; i < 10000; i++) {
+    for (int i = 0; i < 100; i++) {
         long x = rand();
-        int n = rand() % 1000;
+        int n = rand() % 1000 + 1;
         assert(loop(x, n) == loop_c(x, n));
     }
-    printf("03.58 ... ok\n");
+    printf("03.59 ... ok\n");
 }
 
 int

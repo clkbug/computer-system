@@ -30,7 +30,7 @@ store_prod: # %rdi <- dest, %rsi <- x, %rdx <- y
 
 # 03.60
 loop: # %rdi = x, %esi = n
-  movl  %esi, %ecx # %ecx = x
+  movl  %esi, %ecx # %ecx = n
   movl  $1, %edx   # %edx = 1
   movl  $0, %eax   # %eax = 0
   jmp   .L2
@@ -38,7 +38,7 @@ loop: # %rdi = x, %esi = n
   movq  %rdi, %r8  # %r8 = %rdi
   andq  %rdx, %r8  # %r8 &= %rdx
   orq   %r8, %rax  # %rax |= %r8
-  salq  %cl, %rdx  # %rdx <<= %cl
+  salq  %cl, %rdx  # %rdx <<= %cl(%rcx & 0xFF)
 .L2:
   testq %rdx, %rdx # %rdx != 0
   jne   .L3
