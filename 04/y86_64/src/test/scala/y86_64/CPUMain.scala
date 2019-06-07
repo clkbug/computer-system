@@ -35,3 +35,20 @@ object RegisterFileMain extends App {
     c => new RegisterFileTester(c)
   }
 }
+
+
+class ICacheTester(ic: ICache) extends PeekPokeTester(ic) {
+  private def rd(addr: Int, data: Int) = {
+    poke(ic.io.readAddress, addr)
+    step(1)
+    expect(ic.io.readData, data)
+  }
+
+}
+
+
+object ICacheMain extends App {
+  iotesters.Driver.execute(args, () => new ICache) {
+    c => new ICacheTester(c)
+  }
+}
