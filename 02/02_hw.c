@@ -505,7 +505,10 @@ hw02_77(void)
 int
 divide_power2(int x, int k)
 {
-    return x >> k;
+    int bit_width = sizeof(int) << 3;
+    int is_negative = x >> (bit_width - 1);
+    return ((is_negative - 1) & (x >> k)) | (~(is_negative - 1) & (-(-x >> k)));
+    // return (-!is_negative & (x >> k)) | (-is_negative & (-(-x >> k)));
 }
 
 void
@@ -516,6 +519,8 @@ hw02_78(void)
     assert(divide_power2(10, 2) == 2);
     assert(divide_power2(10, 3) == 1);
     assert(divide_power2(10, 4) == 0);
+    assert(divide_power2(-2, 1) == -1);
+    assert(divide_power2(-2, 2) == 0);
     printf("02.78 ... ok\n");
 }
 
@@ -553,6 +558,8 @@ hw02_80(void)
     assert(threefourths(20) == 15);
     assert(threefourths(-240) == -180);
     assert(threefourths(732777683) == 732777683l * 3 / 4);
+    assert(threefourths(-4) == -3);
+    assert(threefourths(-3) == -3);
     for (int i = 0; i < 1000; i++) {
         const long r = rand();
         assert(threefourths(r) == r * 3 / 4);
@@ -590,7 +597,22 @@ hw02_81(void)
     printf("02.81 ... ok\n");
 }
 
-/* 02.82, 83 skip */
+/* 02.82 */
+void
+hw02_82()
+{
+    int x = INT_MIN;
+    int y = 10;
+    assert(!((x < y) == (-x > -y)));
+
+    for (size_t i = 0; i < INT_MAX; i++) {
+        x = i;
+        y = rand();
+        assert((((x + y) << 4) + y - x == 17 * y + 15 * x));
+    }
+
+    printf("02.82 ... ok\n");
+}
 
 /* 02.84 */
 int
@@ -796,33 +818,34 @@ hw02_95(void)
 int
 main()
 {
-    srand(0x12345678);
-    hw02_55();
+    srand(time(NULL));
+    // hw02_55();
 
-    hw02_58();
-    hw02_59();
-    hw02_60();
-    hw02_61();
-    hw02_62();
-    hw02_63();
-    hw02_64();
-    hw02_65();
-    hw02_66();
-    hw02_67();
-    hw02_68();
-    hw02_69();
+    // hw02_58();
+    // hw02_59();
+    // hw02_60();
+    // hw02_61();
+    // hw02_62();
+    // hw02_63();
+    // hw02_64();
+    // hw02_65();
+    // hw02_66();
+    // hw02_67();
+    // hw02_68();
+    // hw02_69();
     // hw02_70();
-    hw02_71();
-    hw02_72();
-    hw02_73();
+    // hw02_71();
+    // hw02_72();
+    // hw02_73();
     // hw02_74();
-    hw02_75();
-    hw02_76();
+    // hw02_75();
+    // hw02_76();
     hw02_77();
-    hw02_78();
+    // hw02_78();
     hw02_79();
     hw02_80();
     hw02_81();
+    hw02_82();
 
     hw02_84();
 
