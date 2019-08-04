@@ -1,3 +1,6 @@
+#ifndef __CSAPP_H__
+#define __CSAPP_H__
+
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -29,3 +32,5 @@ Wait(int* status)
     }
     return pid;
 }
+
+#endif
