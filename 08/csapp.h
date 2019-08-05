@@ -2,6 +2,8 @@
 #define __CSAPP_H__
 
 #include <assert.h>
+#include <features.h>
+#include <signal.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -45,4 +47,27 @@ Execve(const char* __path, char* const __argv[], char* const __envp[])
     }
     return r;
 }
+
+__sighandler_t
+Signal(int signum, __sighandler_t sighandler)
+{
+    __sighandler_t s = signal(signum, sighandler);
+    if (s == SIG_ERR) {
+        perror("signal");
+        exit(1);
+    }
+    return s;
+}
+
+int
+Kill(pid_t pid, int sig)
+{
+    int r = kill(pid, sig);
+    if (r == -1) {
+        perror("kill");
+        exit(1);
+    }
+    return r;
+}
+
 #endif
