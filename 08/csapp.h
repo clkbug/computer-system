@@ -2,6 +2,7 @@
 #define __CSAPP_H__
 
 #include <assert.h>
+#include <errno.h>
 #include <features.h>
 #include <signal.h>
 #include <stdbool.h>

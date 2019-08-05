@@ -4,7 +4,7 @@ CFLAGS := -Wall -Werror -Wpedantic -g
 define scm
 (use-modules (srfi srfi-1))
 
-(define problems '(11 12 13 14 15 16 17 18 19 20 21 22 23))
+(define problems '(11 12 13 14 15 16 17 18 19 20 21 22 23 24))
 (define (n-to-src n) (format #f "08.~a.c" n))
 (define (n-to-target n) (format #f "08.~a" n))
 (define targets (map n-to-target problems))
