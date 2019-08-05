@@ -605,8 +605,8 @@ hw02_82()
     int y = 10;
     assert(!((x < y) == (-x > -y)));
 
-    for (int x = -256; x <= 255; x++) {
-        for (int y = -256; y <= 255; y++) {
+    for (int x = -128; x <= 127; x++) {
+        for (int y = -128; y <= 127; y++) {
             signed char cx = x;
             signed char cy = y;
             unsigned char ux = x;
@@ -615,11 +615,16 @@ hw02_82()
             assert(~cx + ~cy + 1 == ~(cx + cy));                       /* C */
             if ((ux - uy) != -(unsigned char)(cy - cx)) {
                 printf("x=%d y=%d\n", x, y);
+                break;
             }
             /* assert((ux - uy) == -(unsigned char)(cy - cx)); */
-            assert(((cx >> 2) << 2) <= cx);
+            assert(((cx >> 2) << 2) <= cx); /* E */
         }
     }
+
+    x = INT_MAX;
+    y = 0;
+    assert(!(((unsigned int)x - (unsigned int)y) == -(unsigned int)(y - x))); /* D */
 
     printf("02.82 ... ok\n");
 }
