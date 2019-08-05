@@ -1,10 +1,12 @@
 #ifndef __CSAPP_H__
 #define __CSAPP_H__
 
+#include <assert.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
@@ -33,4 +35,14 @@ Wait(int* status)
     return pid;
 }
 
+int
+Execve(const char* __path, char* const __argv[], char* const __envp[])
+{
+    int r = execve(__path, __argv, __envp);
+    if (r == -1) {
+        perror("execve");
+        exit(255);
+    }
+    return r;
+}
 #endif
