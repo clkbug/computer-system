@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <errno.h>
 #include <features.h>
+#include <setjmp.h>
 #include <signal.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -71,4 +72,25 @@ Kill(pid_t pid, int sig)
     return r;
 }
 
+int
+Pause()
+{
+    int r = pause();
+    if (r == -1) {
+        perror("pause");
+        exit(1);
+    }
+    return r;
+}
+
+int
+Sigprocmask(int how, const sigset_t* set, sigset_t* oldset)
+{
+    int r = sigprocmask(how, set, oldset);
+    if (r == -1) {
+        perror("sigprocmask");
+        exit(1);
+    }
+    return r;
+}
 #endif
