@@ -21,7 +21,13 @@ main(int argc, char* argv[])
     }
 
     addr[0] = 'J';
-    munmap(addr, 256);
-    close(fd);
+    if (munmap(addr, 256) == -1) {
+        perror("failed to munmap: ");
+        exit(1);
+    }
+    if (close(fd) == -1) {
+        perror("failed to close: ");
+        exit(1);
+    }
     return 0;
 }
